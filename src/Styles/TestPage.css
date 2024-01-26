@@ -1,0 +1,21 @@
+.test-page{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.filter-button{
+    font-size:30px;
+    border: none;
+    cursor: pointer;
+    color: blue;
+    background-color: aquamarine;
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 0;
+}
+
+.filter-button:hover{
+    z-index: 1;
+    transform: scale(1.1);
+}

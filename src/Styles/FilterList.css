@@ -1,0 +1,118 @@
+.filter-list {
+    margin: 10px;
+    padding: 10px;
+    width: 1000px;
+    background-color: burlywood;
+    border-radius: 10px;
+  }
+  
+  .show-button-posittion {
+    margin-top: 20px;
+    display: flex;
+    align-content: flex-start;
+  }
+  
+  .change-status {
+    display: flex;
+    align-items:baseline;
+    margin-top: 10px;
+    top: 0;
+    z-index: 0;
+    position: sticky; 
+  }
+  
+  .enable,
+  .disable,
+  .save,
+  .remove {
+    position: sticky;
+    top: 0;
+    cursor: pointer;
+    color: white;
+    margin-left: 25px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+  }
+
+  .enable{
+    background-color: green;
+  }
+
+  .disable{
+    background-color: red;
+  }
+
+  .remove{
+    background-color: black;
+  }
+
+  .save{
+    background-color: blueviolet;
+  }
+
+  .enable:hover,
+  .disable:hover,
+  .remove:hover,
+  .save:hover{
+    z-index: 2;
+    transform: scale(1.1);
+  }
+
+  
+  .show-data {
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .table-alighment{
+    display: flex;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    height: 500px;
+
+  }
+
+  table {
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  tbody{
+    margin-top: 20px;
+  }
+  tr {
+    text-align: left;
+    padding: 10px;
+    display: table-row;
+  }
+
+  .row-data{
+    overflow-y:scroll;
+  }
+
+  .row-data:hover{
+    background-color: #cccc;
+  }
+  
+  .data-row:hover {
+    background-color: #cccc;
+  }
+  
+  th {
+    border: 1px solid black;
+    border-bottom: none;
+    top: 0;
+    padding: 5px;
+    background-color: rgb(92, 198, 240);
+    position: sticky;
+  }
+  
+  td {
+    border: 1px solid black;
+    padding: 5px;
+  }
+  
