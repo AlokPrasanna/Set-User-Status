@@ -1,4 +1,6 @@
 import React, { forwardRef, ForwardRefRenderFunction, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../../Styles/FilterList.css';
 import UserDetails from '../../UsersData/UsersData.json';
 
@@ -13,119 +15,199 @@ interface UserDetaisTypes {
 }
 
 const FilterList: ForwardRefRenderFunction<HTMLDivElement, {}> = (props, ref) => {
-
   const [Details, setDetails] = useState<Array<UserDetaisTypes>>([]);
   const [SelectRow, setSelectRow] = useState<UserDetaisTypes | undefined>();
-  const [PendingDetails, setPendingDetails] = useState<Array<UserDetaisTypes>>([]);
+  const [ShowContent,setShowContent] = useState<boolean>(false);
+  const [UnsaveedChanges,setUnsaveChanges] = useState<boolean>(false);
 
   const ShowUserDetails = () => {
     setDetails(UserDetails as UserDetaisTypes[]);
+    setUnsaveChanges(false);
+    setShowContent(true);
   }
 
   const HandelEnableButton = () => {
     if (SelectRow) {
-      // Add the selected row with the updated status to pendingDetails
-      setPendingDetails(prevPendingDetails => [...prevPendingDetails, { ...SelectRow, status: 'Enable' }]);
+      setDetails(prevDetails => prevDetails.map(user =>
+        user.id === SelectRow.id ? { ...user, status: 'Enable' } : user
+      ));
+      setUnsaveChanges(true);
+      showToast('Enabled successfully!', 'enable');
+    }
+    else{
+      showToast('Select User before click Enable button', 'enable-non');
     }
   }
 
   const HandelDisableButton = () => {
     if (SelectRow) {
-      setPendingDetails(prevPendingDetails => [...prevPendingDetails, { ...SelectRow, status: 'Disable' }]);
-      // No need to add to pendingDetails for Disable, as it's immediately applied to the selected row
+      setDetails(prevDetails => prevDetails.map(user =>
+        user.id === SelectRow.id ? { ...user, status: 'Disable' } : user
+      ));
+      setUnsaveChanges(true);
+      showToast('Disabled successfully!', 'disable');
+    }
+    else{
+      showToast('Select User before click Disable button', 'disable-non');
     }
   }
 
   const HandelRemoveButton = () => {
-    // Implement logic to remove the selected row (SelectRow) from the list
     if (SelectRow) {
       setDetails(prevDetails => prevDetails.filter(user => user.id !== SelectRow.id));
       setSelectRow(undefined);
+      setUnsaveChanges(true);
+      showToast('Removed successfully!', 'remove');
+    }
+    else{
+      showToast('Select User before click Remove button', 'remove-non');
     }
   }
 
   const HandelSaveButton = () => {
-    // Apply pending changes to the main Details state
-    setDetails(prevDetails => {
-      // Create a copy of the current details
-      let updatedDetails = [...prevDetails];
-
-      // Apply pending changes to the copy
-      PendingDetails.forEach(pendingUser => {
-        const index = updatedDetails.findIndex(user => user.id === pendingUser.id);
-        if (index !== -1) {
-          updatedDetails[index] = { ...pendingUser };
-        }
-      });
-
-      return updatedDetails;
-    });
-
-    // Clear pending changes after saving
-    setPendingDetails([]);
+    if(UnsaveedChanges){
+      showToast('Data Save Successfully!', 'save');
+      setUnsaveChanges(false);
+    }else{
+      showToast('Change related data before clicking Save button', 'save-non');
+    }
+    
   }
 
+  const showToast = (message: string, action: 'enable' | 'disable' | 'remove' | 'save' | 'enable-non' | 'disable-non' | 'remove-non' | 'save-non') => {
+
+    const toastOptions = {
+      autoClose: 2000
+    };
+
+    switch (action) {
+      case 'enable':
+        toast.success(message, {
+          ...toastOptions,
+          position: 'top-right',
+          className: 'toast-success'
+        });
+        break;
+
+      case 'disable':
+        toast.info(message, {
+         ...toastOptions,
+         position: 'top-right',
+          className: 'toast-info'
+        });
+        break; 
+      
+        case 'remove':
+          toast.error(message, {
+            ...toastOptions,
+            position: 'bottom-right',
+            className: 'toast-error',
+          });
+          break;
+
+        case 'save':
+          toast.success(message, {
+            ...toastOptions,
+            position: 'bottom-right',
+            className: 'toast-save',
+          });
+          break;
+        
+          case 'enable-non':
+            toast.warning(message, {
+              ...toastOptions,
+              position: 'bottom-right',
+              className: 'toast-enable-non',
+            });
+            break;
+            case 'disable-non':
+              toast.warning(message, {
+                ...toastOptions,
+                position: 'bottom-right',
+                className: 'toast-disable-non',
+              });
+              break;
+              case 'remove-non':
+                toast.warning(message, {
+                  ...toastOptions,
+                  position: 'bottom-right',
+                  className: 'toast-remove-non',
+                });
+                break;
+
+                case 'save-non':
+                  toast.warning(message, {
+                    ...toastOptions,
+                    position: 'bottom-right',
+                    className: 'toast-save-non',
+                  });
+                  break;
+        default:
+          break;  
+    }
+  }
   const HandelSelectRow = (user: UserDetaisTypes) => {
     setSelectRow(user);
   }
 
-  console.log("User: ", SelectRow);
-
   return (
-    <div className='filter-list' ref={ref as React.RefObject<HTMLDivElement>}>
+    <div className={`filter-list ${ShowContent ? 'user-list-visible' : ''}`} ref={ref as React.RefObject<HTMLDivElement>}>
       <div>
         <div className='show-button-posittion'>
           <button className='show-data' onClick={ShowUserDetails}>User List</button>
         </div>
-        <div className='table-alighment'>
-          {Details && Details.length > 0 ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>ID</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Details.map((user, index) => (
-                  <tr
-                    key={user.id}
-                    className='row-data'
-                    onClick={() => HandelSelectRow(user)}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{user.id}</td>
-                    <td>{user.first_name}</td>
-                    <td>{user.last_name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.status != null ? user.status : "Set Status"}</td>
+        <div className='content-area'>
+          <div className='table-alighment'>
+            {ShowContent && Details && Details.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : " "}
-          {Details && Details.length > 0 ? (
-            <div className='change-status'>
-              <div>
-                <button type='button' className='enable' onClick={HandelEnableButton}>Enable</button>
+                </thead>
+                <tbody>
+                  {ShowContent && Details.map((user, index) => (
+                    <tr
+                      key={user.id}
+                      className={`row-data ${user.id === SelectRow?.id ? 'selected-row' : ''}`}
+                      onClick={() => HandelSelectRow(user)}
+                    >
+                      <td>{index + 1}</td>
+                      <td>{user.id}</td>
+                      <td>{user.first_name}</td>
+                      <td>{user.last_name}</td>
+                      <td>{user.email}</td>
+                      <td>{user.status != null ? user.status : "Set Status"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : " "}
+            {ShowContent && Details && Details.length > 0 ? (
+              <div className='change-status'>
+                <div>
+                  <button type='button' className='enable' onClick={HandelEnableButton}>Enable</button>
+                </div>
+                <div>
+                  <button type='button' className='disable' onClick={HandelDisableButton}>Disable</button>
+                </div>
+                <div>
+                  <button type='button' className='remove' onClick={HandelRemoveButton}>Remove</button>
+                </div>
+                <div>
+                  <button type='button' className='save' onClick={HandelSaveButton}>Save</button>
+                </div>
               </div>
-              <div>
-                <button type='button' className='disable' onClick={HandelDisableButton}>Disable</button>
-              </div>
-              <div>
-                <button type='button' className='remove' onClick={HandelRemoveButton}>Remove</button>
-              </div>
-              <div>
-                <button type='button' className='save' onClick={HandelSaveButton}>Save</button>
-              </div>
-            </div>
-          ) : " "}
+            ) : " "}
+          </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

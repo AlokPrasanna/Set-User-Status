@@ -28,7 +28,7 @@ const  TestPage: React.FC = () => {
       <div>
         <button className='filter-button' onClick={HandelButtonEvent}>Filter-List</button>
       </div>
-      <div>
+      <div className='filter-List-test-page'>
          {ShowContent && <FilterList ref={FilterListRef}/>}
       </div>
     </div>
